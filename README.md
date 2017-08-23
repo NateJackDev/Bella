@@ -1,11 +1,10 @@
-#Bella
+# Bella
 Bella is a pure python post-exploitation data mining tool & remote administration tool for macOS. 🍎💻 
 
-
-##What is it?
+## What is it?
 Bella is a robust, `pure python`, post-exploitation and remote administration tool for macOS.
 
-`Bella` a.k.a. the `server` is an SSL/TLS encrypted reverse shell that can be dropped on any system running macOS >= 10.6. `Bella` offers the following features: 
+`Bella` a.k.a. the `server` is an SSL/TLS encrypted reverse shell that can be dropped on any system running macOS >= 10.6.* `Bella` offers the following features: 
 
 1. `Pseudo-TTY that emulates an SSH instance` [CTRL-C support for most functions, streaming output, full support for inline bash scripting, tab completion, command history, etc].
 
@@ -55,7 +54,7 @@ Upon gaining root access, Bella will migrate over to a hidden directory in /Libr
 
 1. `MULTI-USER SUPPORT!` Bella will keep track of all information from any active users on the computer in a comprehensive database, and will automatically switch to the active computer user. All of the aforementioned data extraction techniques are now available for every user on the machine.
 
-2. 	`Decrypt ALL TLS/SSL traffic and redirect it through the control center!` [a nice, active, MITM attack]
+2. `Decrypt ALL TLS/SSL traffic and redirect it through the control center!` [a nice, active, MITM attack]
 
 3. `Disable/Enable the Keyboard and/or Mouse.`
 
@@ -66,30 +65,28 @@ Upon gaining root access, Bella will migrate over to a hidden directory in /Libr
 5. `A lot of behind the scenes automation.`
 
 
-##HOW TO USE
-
+## How to Use?
 **Bella**'s `power` lies in its high level of automation of most of the painstaking tasks that one faces in a post-exploitation scenario. It is incredibly easy to **setup and use**, requires no pre-configuration on the target, and very little configuration on the Control Center. It leverages the *incredible* behind the scenes power of macOS and Python for a fluid post-exploitation experience.
 
-1. Download / clone this repository.
+1. Download / Clone this repository.
+`git clone https://github.com/Trietptm-on-Security/Bella.git`
 
-2. Run ./BUILDER and enter the appropriate information. It should look something like this:
+2. Run `./BUILDER Bella.py` and enter the appropriate information. It should look something like this:
 ![](Screenshots/Builder.png)
 3. That's it! Bella is all ready to go. Just upload and execute `Bella` on your macOS target.
-4. Now run `Control Center.py` on your macOS control center. It requires no-dependencies [except for mitmproxy if you want to MITM]. It will do some auto-configuration, and you will see something like this after a few seconds.
-![](Screenshots/Found Clients.png)
+4. Now run `python Control\ Center.py` on your macOS control center. It requires no-dependencies [except for mitmproxy if you want to MITM]. It will do some auto-configuration, and you will see something like this after a few seconds.
+![](Screenshots/Found%20Clients.png)
 The Control Center will constantly update this selection, for up to 128 separate computers.
 5. Press `Ctrl-C` to choose from the selection, and then type in the number of the computer that you want. You will then be presented with a screen like this.
-![](Screenshots/Command entry.png)
+![](Screenshots/Command%20entry.png)
 6. Start running commands! `bella_info` is a great one. Run `manual` to get a full manual of all of the commands. Also, you can hit tab twice to see a list of available commands.
-![](Screenshots/Bella Info.png)
+![](Screenshots/Bella%20Info.png)
 
 **Little note**: Bella works across the internet, if you do some configuration. Configure your firewall to forward Bella's port to your Control Center. Other important ports to forward:
 	1) VNC - 5500. 2) Microphone - 2897. 3) MITM - 8081
 
-##Other Information
+## Other Info
 This project is being **actively** maintained. Please submit any and all bug reports, questions, feature requests, or related information.
-
-
 
 Bella leverages keychaindump, VNC, microphone streaming, etc, by sending base64 encoded C binaries over to the Bella server / target. I have included pre-compiled and encoded files in the Payloads/payloads.txt file. If you wish to compile your own version of these payloads, here is what to do after you compile them:
 
@@ -100,19 +97,8 @@ payload_generator in the Payloads directory should help with this.
 
 Please let me know if you have any issues.
 
-###HUGE thanks
-`https://github.com/juuso/keychaindump`
 
-`https://github.com/n0fate/chainbreaker`
-
-`https://github.com/richardkiss/speakerpipe-osx`
-
-`https://github.com/semaja2/InsomniaX`
-
-`https://github.com/stweil/OSXvnc`
-
-
-###TODO
+### TODO
 1. `Control Center support for Linux` [shouldn't take too much tweaking]
 
 1. `Reverse SOCKS proxy to tunnel our traffic through the server.`
@@ -123,24 +109,30 @@ Please let me know if you have any issues.
 
 4. `Detect ALL programs that cause a block, and kill them [85% done]`
 
-5. 	The `interactive_shell` command, that provides a fully interactive tty through the `ptty`module. The only downside to this feature at the moment is that is cannot run the pre-programmed functions. [95% done, just working on integration for pre-programmed functions]
+5. The `interactive_shell` command, that provides a fully interactive tty through the `ptty`module. The only downside to this feature at the moment is that is cannot run the pre-programmed functions. [95% done, just working on integration for pre-programmed functions]
 
-####Some design points
+#### Some design points
 1. 	As previously stated, Bella is a pseudo-TTY. By this, the base socket and remote code execution handling of Bella is a fairly abstracted version of a very simple request-response socket. Bella receives a command from the server. If the command matches a pre-programmed function (i.e chrome history dump), then it will perform that function, and send the response back to the client. The client will then handle the response in the same way. After processing the response, it will prompt the client for another command to send.
 
 2. Issues with a low-level socket are numerous, and not limited to:
-	3. Program execution that blocks and hangs the pipe, waiting for output that never comes (sudo, nano, ftp)
-	4. Not knowing how much data to expect in the socket.recv() call.
-	5. Not being able to send ctrl-C, ctrl-Z and similar commands.
-	6. No command history
-	7. A program that crashes can kill a shell.
-	8. One-to-one response and request.
+	1. Program execution that blocks and hangs the pipe, waiting for output that never comes (sudo, nano, ftp)
+	2. Not knowing how much data to expect in the socket.recv() call.
+	3. Not being able to send ctrl-C, ctrl-Z and similar commands.
+	4. No command history
+	5. A program that crashes can kill a shell.
+	6. One-to-one response and request.
 3. Bella address the above by:
-	4. recv() and send() functions that serialize the length of the message, and loop through response/requests accordingly.
-	5. Readline integration to give a more 'tty' like feel, including ctrl-C support, command history, and tab completion.
-	6. Detecting programs that block, and killing them **beta**
-	7. Allowing multiple messages to be sent at once without the client prompting for more input (great for commands like ping, tree, and other commands with live updates).
+	1. recv() and send() functions that serialize the length of the message, and loop through response/requests accordingly.
+	2. Readline integration to give a more 'tty' like feel, including ctrl-C support, command history, and tab completion.
+	3. Detecting programs that block, and killing them **beta**
+	4. Allowing multiple messages to be sent at once without the client prompting for more input (great for commands like ping, tree, and other commands with live updates).
 
 For full information on the pre-programmed functions, run the `manual` command when connected to the server.
 
---
+### HUGE thanks
+
+1. [**juuso/keychaindump**](https://github.com/juuso/keychaindump)
+2. [**n0fate/chainbreaker**](https://github.com/n0fate/chainbreaker)
+3. [**richardkiss/speakerpipe-osx**](https://github.com/richardkiss/speakerpipe-osx)
+4. [**semaja2/InsomniaX**](https://github.com/semaja2/InsomniaX)
+5. [**stweil/OSXvnc**](https://github.com/stweil/OSXvnc)
